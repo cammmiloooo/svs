@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feliz San Valentín</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ffe6f0, #ffb3ba);
+            color: #d63384;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .quiz-container h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #e91e63;
+        }
+        .question {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+        .option {
+            font-size: 1.2em;
+            padding: 15px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+        .option:hover {
+            background: #e0e0e0;
+        }
+        .option.correct {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        .option.incorrect {
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
+        }
+        .next-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #ff6b9d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: none;
+        }
+        .gif {
+            width: 150px;
+            height: auto;
+            margin: 20px 0;
+            border-radius: 10px;
+            display: none;
+        }
+        .main-view {
+            display: none;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            z-index: 10;
+        }
+        .container h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #e91e63;
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        button {
+            font-size: 1.2em;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        #yesBtn {
+            background: linear-gradient(45deg, #ff6b9d, #c44569);
+            color: white;
+            transform: scale(1);
+        }
+        #noBtn {
+            background: linear-gradient(45deg, #a8e6cf, #dcedc8);
+            color: #333;
+        }
+        button:hover {
+            transform: scale(1.1);
+        }
+        .snoopy-drawings {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .snoopy {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            animation: float 3s ease-in-out infinite;
+        }
+        .snoopy:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .snoopy:nth-child(2) { top: 20%; right: 15%; animation-delay: 1s; }
+        .snoopy:nth-child(3) { bottom: 15%; left: 20%; animation-delay: 2s; }
+        .snoopy:nth-child(4) { bottom: 10%; right: 10%; animation-delay: 0.5s; }
+        .snoopy:nth-child(5) { top: 30%; left: 50%; animation-delay: 1.5s; }
+        .snoopy:nth-child(6) { bottom: 30%; right: 50%; animation-delay: 2.5s; }
+        .hearts-and-roses {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .heart-rose {
+            position: absolute;
+            font-size: 2em;
+            animation: float 3s ease-in-out infinite;
+        }
+        .heart-rose:nth-child(1) { top: 5%; left: 5%; animation-delay: 0.5s; content: "💘"; }
+        .heart-rose:nth-child(2) { top: 15%; right: 5%; animation-delay: 1.5s; content: "🌹"; }
+        .heart-rose:nth-child(3) { bottom: 20%; left: 5%; animation-delay: 2s; content: "💘"; }
+        .heart-rose:nth-child(4) { bottom: 5%; right: 5%; animation-delay: 0.8s; content: "🌹"; }
+        .heart-rose:nth-child(5) { top: 40%; left: 30%; animation-delay: 1.2s; content: "💘"; }
+        .heart-rose:nth-child(6) { bottom: 40%; right: 30%; animation-delay: 2.8s; content: "🌹"; }
+        .heart-rose:nth-child(7) { top: 25%; left: 70%; animation-delay: 0.3s; content: "💘"; }
+        .heart-rose:nth-child(8) { bottom: 25%; right: 70%; animation-delay: 1.8s; content: "🌹"; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+        .modal-content h2 {
+            color: #e91e63;
+            margin-bottom: 20px;
+        }
+        .modal-content p {
+            font-size: 1.2em;
+            color: #d63384;
+        }
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 2em;
+            cursor: pointer;
+            color: #e91e63;
+        }
+        .modal-gif {
+            width: 200px;
+            height: auto;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+        .img-tt {
+            border-radius: 3vh;
+            margin-bottom: 20px;
+            width: 50%;
+            height: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz" class="quiz-container">
+        <h1>¡Desafío de Amor! 🤨💘</h1>
+        <img id="img-tt" src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExdnp1ZHkxZnI4ZmU1cmVkc3AycHQ3c3V1MnZyaWx2NXFsaGFzaWJkcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/8Do5PA5jPmTd3x8GI4/giphy.gif" alt="¡Correcto!" class="img-tt">
+        <div id="question-text" class="question"></div>
+        <div class="options">
+            <div class="option" data-option="a"></div>
+            <div class="option" data-option="b"></div>
+            <div class="option" data-option="c"></div>
+            <div class="option" data-option="d"></div>
+        </div>
+        <img id="correctGif" src="toby_like.jpg" alt="¡Correcto!" class="gif" style="width: 50%;">
+        <img id="incorrectGif" src="perro_mal.jpeg" alt="¡Incorrecto!" class="gif" style="width: 50%;">
+        <button id="nextBtn" class="next-btn">Siguiente</button>
+        <button id="retryBtn" class="next-btn">Volver a Intentar</button>
+    </div>
+
+    <div id="mainView" class="main-view">
+        <div class="snoopy-drawings">
+            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/53/Snoopy_Peanuts.png/200px-Snoopy_Peanuts.png" alt="Snoopy" class="snoopy">
+            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/53/Snoopy_Peanuts.png/200px-Snoopy_Peanuts.png" alt="Snoopy" class="snoopy">
+            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/53/Snoopy_Peanuts.png/200px-Snoopy_Peanuts.png" alt="Snoopy" class="snoopy">
+            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/53/Snoopy_Peanuts.png/200px-Snoopy_Peanuts.png" alt="Snoopy" class="snoopy">
+            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/53/Snoopy_Peanuts.png/200px-Snoopy_Peanuts.png" alt="Snoopy" class="snoopy">
+            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/53/Snoopy_Peanuts.png/200px-Snoopy_Peanuts.png" alt="Snoopy" class="snoopy">
+        </div>
+        <div class="hearts-and-roses">
+            <div class="heart-rose">💘</div>
+            <div class="heart-rose">🌹</div>
+            <div class="heart-rose">💘</div>
+            <div class="heart-rose">🌹</div>
+            <div class="heart-rose">💘</div>
+            <div class="heart-rose">🌹</div>
+            <div class="heart-rose">💘</div>
+            <div class="heart-rose">🌹</div>
+        </div>
+        <div class="container">
+            <h1>¡Hooolaaa mi amor!💖</h1>
+            <div class="question">¿Quieres ser mi San Valentín?</div>
+            <div class="buttons">
+                <button id="yesBtn">Sí</button>
+                <button id="noBtn">No</button>
+            </div>
+        </div>
+
+        <div id="romanticModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>¡Te amo! 💕</h2>
+                <img src="minionlove.gif" alt="Corazones románticos" class="gif">
+                <p>Tenemos una cita pendiente el Sábado 14 de febrero, te espero con mucha emoción (Hora de inicio 9:00 am). Que este día esté lleno de amor y dulzura para nosotros. 🌹❤️</p>
+            </div>
+        </div>
+        <audio id="song" preload="auto"></audio>
+    </div>
+
+    <audio id="correctSound" src="sonido_correcto.mp3" preload="auto"></audio>
+    <audio id="incorrectSound" src="fah.mp3" preload="auto"></audio>
+
+    <script>
+        const quiz = document.getElementById('quiz');
+        const mainView = document.getElementById('mainView');
+        const questionText = document.getElementById('question-text');
+        const options = document.querySelectorAll('.option');
+        const nextBtn = document.getElementById('nextBtn');
+        const retryBtn = document.getElementById('retryBtn');
+        const correctGif = document.getElementById('correctGif');
+        const incorrectGif = document.getElementById('incorrectGif');
+        const correctSound = document.getElementById('correctSound');
+        const incorrectSound = document.getElementById('incorrectSound');
+
+        const questions = [
+            {
+                question: "¿Cuál es la fecha en la que nos volvimos novios? 🤨",
+                options: {
+                    a: "15 de Junio del 2025",
+                    b: "15 de Agosto del 2025",
+                    c: "15 de Julio del 2025",
+                    d: "15 de Mayo del 2025"
+                },
+                correct: "c"
+            },
+            {
+                question: "¿Cómo se llaman nuestros niños?",
+                options: {
+                    a: "Roberto y Tito",
+                    b: "Titi y Jhon Alberto",
+                    c: "Rosa y melo",
+                    d: "Jhon Jairo y Tito"
+                },
+                correct: "d"
+            },
+            {
+                question: "¿Qué color resulta de mezclar nuestros colores favoritos?",
+                options: {
+                    a: "Verde claro",
+                    b: "Azul Oscuro",
+                    c: "Gris",
+                    d: "Negro"
+                },
+                correct: "b"
+            },
+            {
+                question: "¿Qué animalito bendijo nuestra relación el día que nos volvimos novios?",
+                options: {
+                    a: "Un pajarito",
+                    b: "Un burrito",
+                    c: "Un gatico",
+                    d: "Un perrito"
+                },
+                correct: "c"
+            },
+            {
+                question: "Si vamos a la Flora, no nos podemos ir sin...?",
+                options: {
+                    a: "jugar ping pong",
+                    b: "patear un venezolano",
+                    c: "Comer salpicón con quesito",
+                    d: "patear un venezolano x2"
+                },
+                correct: "c"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let selectedOption = null;
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            questionText.textContent = q.question;
+            options.forEach((opt, index) => {
+                const letter = String.fromCharCode(97 + index);
+                opt.textContent = `${letter.toUpperCase()}) ${q.options[letter]}`;
+                opt.classList.remove('correct', 'incorrect');
+                opt.style.pointerEvents = 'auto';
+            });
+            correctGif.style.display = 'none';
+            incorrectGif.style.display = 'none';
+            nextBtn.style.display = 'none';
+            retryBtn.style.display = 'none';
+            selectedOption = null;
+        }
+
+        options.forEach(opt => {
+            opt.addEventListener('click', () => {
+                if (selectedOption) return;
+                selectedOption = opt.dataset.option;
+                const correct = questions[currentQuestion].correct;
+                if (selectedOption === correct) {
+                    opt.classList.add('correct');
+                    correctGif.style.display = 'block';
+                    nextBtn.style.display = 'block';
+                    correctSound.play();
+                } else {
+                    opt.classList.add('incorrect');
+                    incorrectGif.style.display = 'block';
+                    retryBtn.style.display = 'block';
+                    incorrectSound.play();
+                }
+            });
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                quiz.style.display = 'none';
+                mainView.style.display = 'flex';
+            }
+        });
+
+        retryBtn.addEventListener('click', () => {
+            currentQuestion = 0;
+            loadQuestion();
+        });
+
+        loadQuestion();
+
+        // main view
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const modal = document.getElementById('romanticModal');
+        const song = document.getElementById('song');
+        let scale = 1;
+
+        noBtn.addEventListener('click', () => {
+            scale += 0.5;
+            yesBtn.style.transform = `scale(${scale})`;
+            if (scale > 5) {
+                yesBtn.style.width = '80vw';
+                yesBtn.style.height = '60vh';
+                yesBtn.style.fontSize = '3em';
+            }
+        });
+
+        yesBtn.addEventListener('click', () => {
+            modal.style.display = 'flex';
+            song.src = 'Canción.mp3';
+            song.play();
+        });
+
+        yesBtn.addEventListener('click', () => {
+            modal.style.display = 'flex';
+        });
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
